@@ -46,7 +46,7 @@ exports.createUser = async (payload) => {
     return data;
   } catch (error) {
     console.error(error);
-    throw new InvariantError("User with that email already exists!");
+    throw new InvariantError("Failed to create user!");
   }
 };
 
@@ -77,6 +77,30 @@ exports.getUserByEmail = async (email, returnError) => {
   }
 
   return null;
+};
+
+exports.checkUsernameAvailability = async (username) => {
+  const userData = await user.findOne({
+    where: {
+      username,
+    },
+  });
+
+  if (userData) {
+    throw new InvariantError("Username is already in use!");
+  }
+};
+
+exports.checkEmailAvailability = async (email) => {
+  const userData = await user.findOne({
+    where: {
+      email,
+    },
+  });
+
+  if (userData) {
+    throw new InvariantError("Email is already in use!");
+  }
 };
 
 exports.getGoogleAccessTokenData = async (accessToken) => {

@@ -14,10 +14,12 @@ const userRegisterSchema = Joi.object({
         "image/jpeg",
         "image/jpg",
         "image/png",
-        "image/webp"
+        "image/webp",
       )
       .required(),
-  }).required(),
+  })
+    .required()
+    .unknown(),
 });
 
 const userLoginSchema = Joi.object({
@@ -25,7 +27,12 @@ const userLoginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
+const userGoogleLoginSchema = Joi.object({
+  access_token: Joi.string().required(),
+});
+
 module.exports = {
   userLoginSchema,
   userRegisterSchema,
+  userGoogleLoginSchema,
 };

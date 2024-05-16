@@ -5,21 +5,33 @@ const {
   createUser,
   getUserByEmail,
   getGoogleAccessTokenData,
+  checkUsernameAvailability,
+  checkEmailAvailability,
 } = require("../../repository/user");
-const { createToken } = require("./utils.js");
-const { picture } = require("../../config/cloudinary");
+const { createToken } = require("./utils");
+const { InvariantError, NotFoundError } = require("../../exceptions");
 
-exports.login = async (email, password) => {
+exports.register = async (payload) => {
+  // Check unique username
+  await checkUsernameAvailability(payload.username);
+  // Check unique email
+  await checkEmailAvailability(payload.email);
+  // create user
+  const user = await createUser(payload);
+  return user;
+};
+
+exports.login = async ({ email, password }) => {
   // get the user
-  let user = await getUserByEmail(email);
+  const user = await getUserByEmail(email);
   if (!user) {
-    throw new Error(`User is not found!`);
+    throw new NotFoundError(`User is not found!`);
   }
 
   // compare the password
   const isValid = await bcrypt.compare(password, user?.password);
   if (!isValid) {
-    throw new Error(`Wrong password!`);
+    throw new InvariantError(`Wrong password!`);
   }
 
   // delete password

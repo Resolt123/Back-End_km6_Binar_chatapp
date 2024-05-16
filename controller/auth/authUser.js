@@ -1,25 +1,22 @@
-const { login, googleLogin } = require("../../usecase/auth");
+const { login, googleLogin, register } = require("../../usecase/auth");
+
+exports.register = async (req, res, next) => {
+  try {
+    const user = await register(req.body);
+
+    res.status(201).json({
+      message: "Success",
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 exports.login = async (req, res, next) => {
   try {
-    // get the body
-    const { email, password } = req.body;
-
-    if (email == "" || !email) {
-      return next({
-        message: "Email must be filled!",
-        statusCode: 400,
-      });
-    }
-    if (password == "" || !password) {
-      return next({
-        message: "Password must be filled!",
-        statusCode: 400,
-      });
-    }
-
     // login logic
-    const data = await login(email, password);
+    const data = await login(req.body);
 
     res.status(200).json({
       message: "Success",
@@ -33,14 +30,8 @@ exports.login = async (req, res, next) => {
 exports.googleLogin = async (req, res, next) => {
   try {
     // get the body
+    // eslint-disable-next-line camelcase
     const { access_token } = req.body;
-
-    if (!access_token) {
-      return next({
-        statusCode: 400,
-        message: "Access token must be provided!",
-      });
-    }
 
     // login with google logic
     const data = await googleLogin(access_token);
