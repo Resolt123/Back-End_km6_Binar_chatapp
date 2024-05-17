@@ -1,11 +1,13 @@
+/* eslint-disable no-param-reassign */
 const crypto = require("crypto");
 const path = require("path");
 const axios = require("axios");
 const bcrypt = require("bcrypt");
+const { v4: uuidv4 } = require("uuid");
 const { user } = require("../../models");
 const { uploader } = require("../../helper/cloudinary");
 const { getData, setData } = require("../../helper/redis");
-const { v4: uuidv4 } = require("uuid");
+const { InvariantError, NotFoundError } = require("../../exceptions");
 
 exports.createUser = async (payload) => {
   try {
@@ -44,7 +46,7 @@ exports.createUser = async (payload) => {
     return data;
   } catch (error) {
     console.error(error);
-    throw new Error("User with that email already exists!");
+    throw new InvariantError("Failed to create user!");
   }
 };
 
@@ -71,15 +73,39 @@ exports.getUserByEmail = async (email, returnError) => {
   }
 
   if (returnError) {
-    throw new Error(`User is not found!`);
+    throw new NotFoundError(`User is not found!`);
   }
 
   return null;
 };
 
+exports.checkUsernameAvailability = async (username) => {
+  const userData = await user.findOne({
+    where: {
+      username,
+    },
+  });
+
+  if (userData) {
+    throw new InvariantError("Username is already in use!");
+  }
+};
+
+exports.checkEmailAvailability = async (email) => {
+  const userData = await user.findOne({
+    where: {
+      email,
+    },
+  });
+
+  if (userData) {
+    throw new InvariantError("Email is already in use!");
+  }
+};
+
 exports.getGoogleAccessTokenData = async (accessToken) => {
   const response = await axios.get(
-    `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`
+    `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`,
   );
   return response.data;
 };

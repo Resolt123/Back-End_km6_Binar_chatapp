@@ -1,4 +1,3 @@
-"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -9,20 +8,25 @@ module.exports = {
         type: Sequelize.UUID,
       },
       username: {
-        allowNull: true,
+        allowNull: false,
         unique: true,
         type: Sequelize.STRING,
       },
       name: {
+        allowNull: false,
         type: Sequelize.STRING,
       },
       email: {
+        allowNull: false,
+        unique: true,
         type: Sequelize.STRING,
       },
       password: {
+        allowNull: false,
         type: Sequelize.STRING,
       },
       image: {
+        allowNull: false,
         type: Sequelize.TEXT,
       },
       deletedAt: {
@@ -38,6 +42,7 @@ module.exports = {
       },
     });
   },
+  // eslint-disable-next-line no-unused-vars
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("users");
   },

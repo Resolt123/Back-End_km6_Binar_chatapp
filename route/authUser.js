@@ -1,8 +1,27 @@
 const express = require("express");
-const router = express.Router();
-const { login, googleLogin } = require("../controller/auth/authUser");
-//const { authMiddleware } = require("../middleware/auth");
 
-router.post("/login", login);
-router.post("/google-login", googleLogin);
+const router = express.Router();
+const {
+  login,
+  googleLogin,
+  register,
+  profile,
+} = require("../controller/auth/authUser");
+const { validationHandler } = require("../middleware");
+const {
+  userLoginSchema,
+  userRegisterSchema,
+  userGoogleLoginSchema,
+} = require("../validations");
+// const { authMiddleware } = require("../middleware/auth");
+
+router.get("/profile", profile);
+router.post("/register", validationHandler(userRegisterSchema), register);
+router.post("/login", validationHandler(userLoginSchema), login);
+router.post(
+  "/google-login",
+  validationHandler(userGoogleLoginSchema),
+  googleLogin,
+);
+
 module.exports = router;

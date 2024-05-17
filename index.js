@@ -4,6 +4,7 @@ const express = require("express");
 const fileUpload = require("express-fileupload");
 const cors = require("cors");
 const router = require("./route");
+const { errorHandler } = require("./middleware");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -15,7 +16,7 @@ app.use(express.json()); // body -> json
 app.use(
   fileUpload({
     useTempFiles: true,
-    tempFileDir: process.env.NODE_ENV == "development" ? "./tmp" : "/tmp",
+    tempFileDir: process.env.NODE_ENV === "development" ? "./tmp" : "/tmp",
   })
 ); // body -> form-data
 
@@ -32,22 +33,7 @@ app.use("*", (req, res) => {
 });
 
 // Error middleware
-app.use((err, req, res, next) => {
-  let statusCode = 500;
-  let message = "Internal Server Error";
-
-  if (err.statusCode) {
-    statusCode = err.statusCode;
-  }
-  if (err.message) {
-    message = err.message;
-  }
-
-  res.status(statusCode).json({
-    data: null,
-    message,
-  });
-});
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server running on ${port}!`);
