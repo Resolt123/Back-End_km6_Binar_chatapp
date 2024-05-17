@@ -25,9 +25,7 @@ exports.createMessage = async (req, res, next) => {
       });
     }
 
-    const data = await messageUsecase.createMessage({
-      message,
-    });
+    const data = await messageUsecase.createMessage(req.body);
 
     // Emit event
     req.io.emit("message", message);

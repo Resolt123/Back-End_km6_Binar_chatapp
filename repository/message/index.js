@@ -1,7 +1,13 @@
-const { messages } = require("../../models");
+const { messages, user } = require("../../models");
 
 exports.getMessages = async () => {
-  const data = await messages.findAll();
+  const data = await messages.findAll({
+    include: [
+      {
+        model: user,
+      },
+    ],
+  });
   return data;
 };
 
