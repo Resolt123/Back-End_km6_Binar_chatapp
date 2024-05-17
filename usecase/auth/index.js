@@ -11,6 +11,7 @@ const {
 } = require("../../repository/user");
 const { createToken } = require("./utils");
 const { InvariantError, NotFoundError } = require("../../exceptions");
+const { picture } = require("../../config/cloudinary");
 
 exports.register = async (payload) => {
   // Check unique username
@@ -63,6 +64,8 @@ exports.login = async ({ email, password }) => {
 exports.googleLogin = async (accessToken) => {
   // validate the token and get the data from google
   const googleData = await getGoogleAccessTokenData(accessToken);
+  const randomString = Math.random().toString(36).substring(2, 7);
+
 
   // get is there any existing user with the email
   let user = await getUserByEmail(googleData?.email);
@@ -72,7 +75,7 @@ exports.googleLogin = async (accessToken) => {
     // Create new user based on google data that get by access_token
     user = await createUser({
       email: googleData?.email,
-      username: null,
+      username: googleData?.email.split("@")[0] + randomString,
       name: googleData?.name,
       password: "",
       picture: googleData?.picture,

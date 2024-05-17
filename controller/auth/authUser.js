@@ -34,7 +34,7 @@ exports.googleLogin = async (req, res, next) => {
   try {
     // get the body
     // eslint-disable-next-line camelcase
-    const { access_token } = req.body;
+    const { access_token } = req. body;
 
     // login with google logic
     const data = await googleLogin(access_token);
