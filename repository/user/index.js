@@ -83,3 +83,28 @@ exports.getGoogleAccessTokenData = async (accessToken) => {
   );
   return response.data;
 };
+
+exports.getUserByID = async (id) => {
+  const key = `user:${id}`;
+
+  // get from redis
+  let data = await getData(key);
+  if (data) {
+    return data;
+  }
+
+  // get from db
+  data = await user.findAll({
+    where: {
+      id,
+    },
+  });
+  if (data.length > 0) {
+    // save to redis
+    await setData(key, data[0], 300);
+
+    return data[0];
+  }
+
+  throw new Error(`User is not found!`);
+};

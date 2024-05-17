@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const {
   createUser,
   getUserByEmail,
+  getUserByID,
   getGoogleAccessTokenData,
 } = require("../../repository/user");
 const { createToken } = require("./utils.js");
@@ -71,6 +72,23 @@ exports.googleLogin = async (accessToken) => {
 
   // create token
   const data = createToken(user);
+
+  return data;
+};
+
+exports.profile = async (id) => {
+  // get the user
+  let data = await getUserByID(id);
+  if (!data) {
+    throw new Error(`User is not found!`);
+  }
+
+  // delete password
+  if (data?.dataValues?.password) {
+    delete data?.dataValues?.password;
+  } else {
+    delete data?.password;
+  }
 
   return data;
 };
