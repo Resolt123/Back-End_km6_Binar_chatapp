@@ -1,4 +1,4 @@
 runtime: nodejs20
 service: chatapp-production
 vpc_access_connector:
-    name: "projects/kampus-merdeka-binar/locations/asia-southeast2/connectors/connect-to-sql"
+  name: "projects/kampus-merdeka-binar/locations/asia-southeast2/connectors/connect-to-sql"

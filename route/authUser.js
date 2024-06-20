@@ -6,6 +6,7 @@ const {
   googleLogin,
   register,
   profile,
+  editProfileController,
 } = require("../controller/auth/authUser");
 const { validationHandler } = require("../middleware");
 const {
@@ -23,5 +24,6 @@ router.post(
   validationHandler(userGoogleLoginSchema),
   googleLogin,
 );
+router.patch("/edit-profile", editProfileController);
 
 module.exports = router;

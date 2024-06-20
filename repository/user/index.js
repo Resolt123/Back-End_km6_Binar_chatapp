@@ -134,3 +134,40 @@ exports.getUserByID = async (id) => {
 
   throw new Error(`User is not found!`);
 };
+
+exports.editProfile = async (payload) => {
+  if (payload.image) {
+    // upload image to cloudinary
+    const { image } = payload;
+
+    // make unique filename -> 213123128uasod9as8djas
+    image.publicId = crypto.randomBytes(16).toString("hex");
+
+    // rename the file -> 213123128uasod9as8djas.jpg / 213123128uasod9as8djas.png
+    image.name = `${image.publicId}${path.parse(image.name).ext}`;
+
+    // Process to upload image
+    const imageUpload = await uploader(image);
+    payload.image = imageUpload.secure_url;
+  }
+
+  const data = await user.update(payload, {
+    where: {
+      id: payload.id,
+    },
+  });
+
+  const updatedUser = await user.findOne({
+    where: {
+      id: payload.id,
+    },
+  });
+
+  // save to redis (email and id)
+  const keyID = `user:${updatedUser.id}`;
+  await setData(keyID, updatedUser, 300);
+
+  const keyEmail = `user:${updatedUser.email}`;
+  await setData(keyEmail, updatedUser, 300);
+  return updatedUser;
+};

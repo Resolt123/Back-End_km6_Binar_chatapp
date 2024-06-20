@@ -60,9 +60,9 @@ io.on("connection", (socket) => {
     console.log(socket.id + " disconnected because " + reason);
   });
 
-  socket.on("typing", () => {
-    console.log("aku ditrigger");
-    io.emit("ontyping");
+  socket.on("typing", (typingUser) => {
+    console.log("aku ditrigger", typingUser);
+    io.emit("ontyping", typingUser);
   });
 });
 

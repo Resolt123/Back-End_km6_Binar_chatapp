@@ -1,6 +1,5 @@
-const { login, googleLogin, profile, register } = require("../../usecase/auth");
+const { login, googleLogin, profile, register, editProfile } = require("../../usecase/auth");
 const { getTokenFromHeaders, extractToken } = require("../../helper/auth");
-
 
 exports.register = async (req, res, next) => {
   try {
@@ -14,7 +13,6 @@ exports.register = async (req, res, next) => {
     next(error);
   }
 };
-
 
 exports.login = async (req, res, next) => {
   try {
@@ -30,11 +28,27 @@ exports.login = async (req, res, next) => {
   }
 };
 
+exports.editProfileController = async (req, res, next) => {
+  try {
+    if (req?.files?.image) {
+      const { image } = req.files;
+      req.body.image = image;
+    }
+    const data = await editProfile(req.body);
+    return res.status(200).json({
+      message: "Success",
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.googleLogin = async (req, res, next) => {
   try {
     // get the body
     // eslint-disable-next-line camelcase
-    const { access_token } = req. body;
+    const { access_token } = req.body;
 
     // login with google logic
     const data = await googleLogin(access_token);

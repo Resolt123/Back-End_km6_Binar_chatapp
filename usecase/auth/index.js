@@ -8,6 +8,7 @@ const {
   getGoogleAccessTokenData,
   checkUsernameAvailability,
   checkEmailAvailability,
+  editProfile,
 } = require("../../repository/user");
 const { createToken } = require("./utils");
 const { InvariantError, NotFoundError } = require("../../exceptions");
@@ -66,7 +67,6 @@ exports.googleLogin = async (accessToken) => {
   const googleData = await getGoogleAccessTokenData(accessToken);
   const randomString = Math.random().toString(36).substring(2, 7);
 
-
   // get is there any existing user with the email
   let user = await getUserByEmail(googleData?.email);
 
@@ -106,4 +106,24 @@ exports.profile = async (id) => {
   }
 
   return data;
+};
+
+exports.editProfile = async (payload) => {
+  // get the user
+  let user = await getUserByID(payload.id);
+  if (!user) {
+    throw new NotFoundError(`User is not found!`);
+  }
+
+  // update the user
+  user = await editProfile(payload);
+
+  // delete password
+  if (user?.dataValues?.password) {
+    delete user?.dataValues?.password;
+  } else {
+    delete user?.password;
+  }
+
+  return user;
 };
