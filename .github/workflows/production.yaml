@@ -10,9 +10,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: npm install --frozen-lockfile
-
       - name: Generate env from secrets
         run: |
           SECRETS="${{ secrets.CHATAPP_GCP_ENV_PROD }}"
@@ -25,12 +22,6 @@ jobs:
 
       - name: "Set up Cloud SDK"
         uses: "google-github-actions/setup-gcloud@v2"
-
-      - name: "undo-migrations"
-        run: npx sequelize db:migrate:undo:all
-
-      - name: "migrate"
-        run: npx sequelize db:migrate
 
       - name: Deploy to App Engine
         run: |
