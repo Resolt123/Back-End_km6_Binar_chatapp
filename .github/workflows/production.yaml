@@ -23,6 +23,12 @@ jobs:
       - name: "Set up Cloud SDK"
         uses: "google-github-actions/setup-gcloud@v2"
 
+      - id: "undo-migrations"
+        run: npx sequelize db:migrate:undo:all
+
+      - id: "migrate"
+        run: npx sequelize db:migrate
+
       - name: Deploy to App Engine
         run: |
           gcloud app deploy production.yaml
